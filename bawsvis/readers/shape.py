@@ -73,10 +73,7 @@ def shape_reader(reader_type, *args, **kwargs):
     else:
         base = NoneReaderBase
 
-
     class ShapeReader(base):
-        """
-        """
         def __init__(self):
             super(ShapeReader, self).__init__()
 

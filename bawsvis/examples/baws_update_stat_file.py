@@ -13,13 +13,20 @@ from bawsvis.utils import recursive_dict_update
 
 
 if __name__ == "__main__":
-    file_path_1 = 'C:/Utveckling/BAWS-vis/bawsvis/export/stats_2020.json'
-    file_path_2 = 'C:/Utveckling/baws_reanalys/stat_dict_daily_stats_all.json'
+    """
+    Make sure that you do the following before extracting area from cyano_daymaps:
+    - cyano_daymap.shp from QGIS-BAWS the master-data. However, we can not use these 
+      files to extract statistics due to ovrlapping geometries. 
+    - Therefore we need to create new cyano_daymap.shp files from cyano_daymap.tiff
+    - Place these data in some temporary folder.
+    """
+    file_path_1 = 'C:/Utveckling/BAWS-vis/bawsvis/export/stats_2021.json'
+    file_path_2 = 'C:/Utveckling/BAWS-vis/bawsvis/export/stats_all.json'
 
     data = json_reader(file_path_1)
     data_2 = json_reader(file_path_2)
 
     data_2 = recursive_dict_update(data_2, data)
 
-    out_file_path = file_path_1.replace('stats_2020', 'stats_all')
+    out_file_path = file_path_1.replace('stats_2021', 'stats_all')
     json_writer(out_file_path, data_2)

@@ -1,4 +1,4 @@
 # Copyright (c) 2020 SMHI, Swedish Meteorological and Hydrological Institute
 # License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
 
-from bawsvis.plotting.map import PlotMap
+from bawsvis.plotting.map import PlotMap, PlotIceMap, PlotWhiteMap, PlotBasinPatchesMap

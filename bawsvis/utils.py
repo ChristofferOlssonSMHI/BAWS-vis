@@ -11,6 +11,11 @@ import numpy as np
 import rasterio as rio
 from collections import Mapping
 from pyproj import Proj, CRS, transform
+from decimal import Decimal, ROUND_HALF_UP
+
+
+def round_value(value, nr_decimals=0, out_format=str):
+    return out_format(Decimal(str(value)).quantize(Decimal('%%1.%sf' % nr_decimals % 1), rounding=ROUND_HALF_UP))
 
 
 def transform_ref_system(lat=0.0, lon=0.0,

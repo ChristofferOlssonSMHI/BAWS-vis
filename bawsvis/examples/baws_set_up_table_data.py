@@ -22,19 +22,14 @@ if __name__ == "__main__":
     # s.setting.set_export_directory(path=None)
 
     # Generate filepaths (daily)
-    generator = generate_filepaths(s.setting.export_directory,
-                                   pattern='cyano_daymap_',
-                                   endswith='.shp',
-                                   only_from_dir=True)
+    generator = generate_filepaths(s.setting.export_directory, pattern='cyano_daymap_',
+                                   endswith='.shp')
 
     # Loop through the file-generator and aggregate the data.
     stats_daily = get_daily_stats(generator)
 
     # Generate filepaths (weekly)
-    generator = generate_filepaths(s.data_path,
-                                   pattern='cyano_weekmap_',
-                                   endswith='.shp',
-                                   only_from_dir=True)
+    generator = generate_filepaths(s.data_path, pattern='cyano_weekmap_', endswith='.shp')
 
     # Loop through the file-generator and aggregate the data.
     stats_weekly = get_weekly_stats(generator)

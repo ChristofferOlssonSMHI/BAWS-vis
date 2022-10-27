@@ -5,17 +5,23 @@ Created on 2020-09-17 17:21
 @author: a002028
 
 """
+import os
+
+import numpy as np
+
 from bawsvis.session import Session
 from bawsvis.readers.text import np_txt_reader
-from bawsvis.plotting import PlotMap
+from bawsvis.plotting import PlotMap, PlotIceMap
+import matplotlib.pyplot as plt
+import cmocean
 
 
 if __name__ == "__main__":
 
     s = Session()
 
-    lat = np_txt_reader('...N_FIX\\python_process_data\\lat_baws.txt')
-    lon = np_txt_reader('...N_FIX\\python_process_data\\lon_baws.txt')
+    lat = np_txt_reader('..\\proj\\havgem\\Johannes_Johansson\\N_FIX\\python_process_data\\lat_baws.txt')
+    lon = np_txt_reader('..\\proj\\havgem\\Johannes_Johansson\\N_FIX\\python_process_data\\lon_baws.txt')
 
     # lat = np_txt_reader('E:\\Johannes_exjobb\\import_data\\lat_small.txt')
     # lon = np_txt_reader('E:\\Johannes_exjobb\\import_data\\lon_small.txt')
@@ -51,24 +57,30 @@ if __name__ == "__main__":
     #     plot._draw_map()
     #     plot._draw_mesh(p_color=True)
     #     plot._save_figure(''.join((s.setting.export_directory, 'aggregation_baws_modis_%s.png' % year)))
+    data = np_txt_reader('C:\\Utveckling\\BAWS-vis\\bawsvis\\export\\modis_aggregation_2002-2020.txt')
+    data = np.where(data==0, np.nan, data)
+    data = data/19.
 
-    data = np_txt_reader('C:\\Utveckling\\BAWS-vis\\bawsvis\\export\\2002-2020_aggregation.txt')
-    mask = np_txt_reader('...N_FIX\\Result\\MASK_BP_GoF_GoB.txt')
+    # mask = np_txt_reader('...N_FIX\\Result\\MASK_BP_GoF_GoB.txt')
 
-    map_frame = {'lat_min': 52., 'lat_max': 66.,
-                 'lon_min': 7., 'lon_max': 37.5}
+    # map_frame = {'lat_min': 52., 'lat_max': 66.,
+    #              'lon_min': 7., 'lon_max': 37.5}
 
-    plot = PlotMap(data_mat=data.astype(float),
+    map_frame = {'lat_min': 52.5, 'lat_max': 66.,
+                 'lon_min': 9., 'lon_max': 36.8}
+
+    plot = PlotIceMap(data_mat=data.astype(float),
                    lat_mat=lat,
                    lon_mat=lon,
-                   cbar_label='Number of bloom days',
-                   cmap_step=30,
-                   max_tick=150,
+                   cbar_label='Average number of bloom days per year',
+                   cmap=cmocean.cm.haline,
+                   cmap_step=2,
+                   max_tick=10,
                    min_tick=0,
                    use_frame=True,
                    p_color=True,
                    map_frame=map_frame,
-                   resolution='h',
+                   resolution='f',
                    fig_title='Cyanobacterial bloom 2002-2020',
                    fig_name='aggregation_2002_2020_2.png',
                    save_fig=True,
@@ -77,4 +89,10 @@ if __name__ == "__main__":
 
     plot._draw_map()
     plot._draw_mesh(p_color=True)
-    plot._save_figure(''.join((s.setting.export_directory, 'aggregation_2002_2020_2.png')))
+
+    save_dir = r'..\proj\havgem\Johannes_Johansson\coclime_figures\map'
+    f_name = 'aggregation_2002_2020_v4'
+    plt.savefig(os.path.join(save_dir, f_name) + '.png', format='png', dpi=500)
+    # plt.savefig(os.path.join(save_dir, f_name) + '.eps', format='eps')
+    plt.savefig(os.path.join(save_dir, f_name) + '.pdf', format='pdf')
+    # plot._save_figure(''.join((s.setting.export_directory, 'aggregation_2002_2020_3.png')))

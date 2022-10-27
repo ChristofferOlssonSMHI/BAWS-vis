@@ -3,3 +3,4 @@ bawsvis/export/*
 export/*
 *.pyc
 .idea
+*.pickle

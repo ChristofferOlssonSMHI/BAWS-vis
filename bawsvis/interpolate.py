@@ -23,6 +23,7 @@ def get_interpolated_df(df, x_key, y_key):
         x = df[x_key].astype(np.int64)
     else:
         x = df[x_key]
+    print(x_key, y_key)
     i_x, i_y = interpolate_array(x.values, df[y_key].astype(np.float).values)
     out_df = pd.DataFrame({'x': i_x, 'y': i_y})
     if x_key == 'timestamp':
@@ -38,6 +39,13 @@ def interpolate_array(x, y, smooth_rate=500):
     :param y:
     :return:
     """
+    # print('x', len(x))
+    # print('y', len(y))
+    # old_v = 0
+    # for i, v in enumerate(x):
+    #     if v <= old_v:
+    #         print(v, i)
+    #     old_v = i
     interp_obj = interpolate.PchipInterpolator(x, y)
     new_x = np.linspace(x[0], x[-1], smooth_rate)
     new_y = interp_obj(new_x)

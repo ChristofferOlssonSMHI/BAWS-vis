@@ -14,8 +14,8 @@ from bawsvis.readers.text import np_txt_reader
 
 
 class Settings:
-    """
-    """
+    """Doc."""
+
     def __init__(self, coordinates_settings='baws1000_sweref99tm'):
         self.base_directory = os.path.dirname(os.path.realpath(__file__))
         self.export_directory = '\\'.join([self.base_directory, 'export', ''])

@@ -15,10 +15,12 @@ if __name__ == "__main__":
 
     s = Session()
 
-    for year in range(2002, 2010):
+    # for year in range(2002, 2010):
+    for year in range(2022, 2023):
         year = str(year)
 
-        file = 'C:/Utveckling/BAWS-vis/bawsvis/export/aggregation_%s.tiff' % year
+        # file = 'C:/Utveckling/BAWS-vis/bawsvis/export/aggregation_%s.tiff' % year
+        file = r'C:\Temp\baws_reanalys\aggragated_archive\not_corrected_aggregation_2022.tiff'
         data, meta = raster_reader(file, include_meta=True)
 
         map_frame = {'lat_min': 52., 'lat_max': 66.,
@@ -34,7 +36,7 @@ if __name__ == "__main__":
                        use_frame=True,
                        p_color=True,
                        map_frame=map_frame,
-                       resolution='h',
+                       resolution='l',
                        fig_title='Cyanobacterial bloom %s' % year,
                        fig_name='aggregation_%s.png' % year,
                        save_fig=True,
@@ -43,4 +45,6 @@ if __name__ == "__main__":
 
         plot._draw_map()
         plot._draw_mesh(p_color=True)
-        plot._save_figure(''.join((s.setting.export_directory, 'aggregation_%s.png' % year)))
+        plot._save_figure(
+            ''.join((s.setting.export_directory, 'not_corrected_aggregation_%s.png' % year))
+        )
