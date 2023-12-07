@@ -6,14 +6,17 @@ Created on 2020-08-28 12:23
 @author: a002028
 
 """
-import seaborn as sns
-sns.set_style("ticks", {'axes.grid': True, 'grid.linestyle': '--'})
-sns.set_context("paper", rc={"grid.linewidth": 0.5})
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Polygon
-import cmocean
+try:
+    import seaborn as sns
+    sns.set_style("ticks", {'axes.grid': True, 'grid.linestyle': '--'})
+    sns.set_context("paper", rc={"grid.linewidth": 0.5})
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.basemap import Basemap
+    from matplotlib.collections import PatchCollection
+    from matplotlib.patches import Polygon
+    import cmocean
+except:
+    pass
 import numpy as np
 
 

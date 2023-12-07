@@ -13,7 +13,7 @@ from bawsvis.data_handler import shapeify, shapeify_weekly
 
 if __name__ == "__main__":
     # Set path to data directory
-    data_path = r'C:\Temp\baws_reanalys\clipped_archive\corrected_geoms'
+    data_path = r'C:\Temp\baws_reanalys\tiff_archive\corrected'
     # data_path = r'C:\Temp\baws_reanalys\2022\corrected_geoms'
 
     # Create the Session object
@@ -28,21 +28,12 @@ if __name__ == "__main__":
     # Generate filepaths
     generator = generate_filepaths(
         s.data_path,
-        pattern='cyano_daymap_200',
+        pattern='cyano_weekmap_',
         endswith='.tiff'
     )
 
     # Loop through the file-generator and shapeify raster data.
     for rst_path in generator:
-        if not any((d in rst_path for d in ('cyano_daymap_20080702',
-                                            'cyano_daymap_20040705',
-                                            'cyano_daymap_20040702',
-                                            'cyano_daymap_20040630',
-                                            'cyano_daymap_20040629',
-                                            'cyano_daymap_20040626',
-                                            'cyano_daymap_20030705',
-                                            'cyano_daymap_20030615'))):
-            continue
         print(rst_path)
-        shapeify(rst_path, export_path=s.setting.export_directory)
-        # shapeify_weekly(rst_path, export_path=s.setting.export_directory)
+        # shapeify(rst_path, export_path=s.setting.export_directory)
+        shapeify_weekly(rst_path, export_path=s.setting.export_directory)

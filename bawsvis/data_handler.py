@@ -57,7 +57,6 @@ def get_area(geoframe):
 
 
 def shapeify_clouds(array, export_path=None):
-    """Doc."""
     shape_list = get_shapes_from_raster(array)
     schema = {'properties': [('class', 'int')], 'geometry': 'Polygon'}
     crs, transform, area_shape = area2transform_baws1000_sweref99tm()
@@ -305,7 +304,6 @@ def get_weekly_stats(generator):
 
 
 def aggregation_annuals(file_generator, mask=None, reader='raster'):
-    """Doc."""
     arrays = []
     for fid in file_generator:
         print(fid)
@@ -334,14 +332,6 @@ def aggregation_annuals(file_generator, mask=None, reader='raster'):
 
 
 def raster_aggregation(file_generator, mask=None, only_surface=False, reader='raster'):
-    """
-
-    :param reader:
-    :param file_generator:
-    :param mask:
-    :param only_surface:
-    :return:
-    """
     arrays = []
     zeros = np.array(())
     for fid in file_generator:
@@ -378,7 +368,6 @@ def raster_aggregation(file_generator, mask=None, only_surface=False, reader='ra
 
 
 def raster_cloud_aggregation(file_generator, reader='raster'):
-    """Doc."""
     agg_array = np.array(())
     for fid in file_generator:
         print(fid)
@@ -406,11 +395,7 @@ def raster_aggregation_ice(file_generator):
 
 
 def get_interpolated_data_table(data):
-    """
-    Hardcoded to fit BAWS statistics.
-    :param data:
-    :return:
-    """
+    """Hardcoded to fit BAWS statistics."""
     df = pd.DataFrame({'timestamp': data.columns,
                        'daily_bloom_area': data.loc['daily_bloom_area', :],
                        'surface_area': data.loc['surface_area', :],
@@ -432,11 +417,7 @@ def get_interpolated_data_table(data):
 
 
 def get_interpolated_statistics_table(data):
-    """
-    Hardcoded to fit BAWS statistics.
-    :param data:
-    :return:
-    """
+    """Hardcoded to fit BAWS statistics."""
     df = pd.DataFrame({'timestamp': data.columns,
                        'daily_mean': data.loc['daily_mean', :],
                        'daily_std_u': data.loc['daily_std_u', :],
@@ -459,7 +440,6 @@ def get_interpolated_statistics_table(data):
 
 
 def get_statistics(file_path):
-    """"""
     data = pandas_reader(file_path)
     data.rename(columns={c: pd.Timestamp(str(c)) for c in data.columns}, inplace=True)
     # df = get_interpolated_data_table(data)
@@ -498,7 +478,6 @@ def get_statistics(file_path):
 
 
 def get_valid_interiors(polygon_interiors):
-    """Doc."""
     valid_interiors = []
     for ie in polygon_interiors:
         if ie.is_valid and ie.is_simple:
@@ -562,7 +541,6 @@ class ExteriorLog:
 
 
 def get_valid_exterior(poly, name):
-    """Doc."""
     if type(poly) == MultiPolygon:
         # valid_geom = []
         if len(list(poly)) > 2:
@@ -581,15 +559,18 @@ def get_valid_exterior(poly, name):
 
 
 def correct_shapefile(fid, export_path=None):
-    """Doc."""
-    gf = gp.read_file(fid)
     name = os.path.basename(fid)
-
+    gf = gp.read_file(fid)
+    gf = gf.loc[~gf.geometry.isna(), :]
+    boolean = gf.is_valid
+    gf_not_valid = gf.loc[~boolean, :].reset_index(drop=True)
+    gf_valid = gf.loc[boolean, :].reset_index(drop=True)
     shapes = []
-    for i, shape in enumerate(gf._to_geo()['features']):
+    # for i, shape in enumerate(gf._to_geo()['features']):
+    #     row_gf = gf.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
 
-        row_gf = gf.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
-
+    for i, shape in enumerate(gf_not_valid._to_geo()['features']):
+        row_gf = gf_not_valid.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
         if row_gf.shape[0] > 1:
             exp_gf = row_gf.buffer(0)
             invalid_exteriors = []
@@ -639,13 +620,17 @@ def correct_shapefile(fid, export_path=None):
                     new_shape['geometry'] = mapping(poly)
                     shapes.append(new_shape)
 
+    for shape in gf_valid._to_geo()['features']:
+        shapes.append(shape)
+
     crs = rio.crs.CRS.from_string('+init=epsg:3006')
     schema = {'properties': [('class', 'int')], 'geometry': 'Polygon'}
 
     out_path = os.path.join(export_path, os.path.basename(fid))
-    with fiona.open(out_path, 'w',
-                    driver='ESRI Shapefile', crs=to_string(crs),
-                    schema=schema) as dst:
+    with fiona.open(
+            out_path, 'w',
+            driver='ESRI Shapefile', crs=to_string(crs),
+            schema=schema) as dst:
         dst.writerecords(shapes)
 
 

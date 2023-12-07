@@ -9,7 +9,10 @@ Created on 2020-08-28 10:50
 import os
 import numpy as np
 import rasterio as rio
-from collections import Mapping
+try:
+    from collections import Mapping
+except:
+    pass
 from pyproj import Proj, CRS, transform
 from decimal import Decimal, ROUND_HALF_UP
 
