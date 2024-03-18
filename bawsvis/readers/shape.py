@@ -66,7 +66,7 @@ def shape_reader(reader_type, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    if reader_type is 'geopandas':
+    if reader_type == 'geopandas':
         base = GeoPandasReaderBase
     # elif reader_type is 'qgis':
     #     base = QGISShapeReaderBase

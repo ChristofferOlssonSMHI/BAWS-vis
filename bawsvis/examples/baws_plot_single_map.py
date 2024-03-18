@@ -19,8 +19,10 @@ if __name__ == "__main__":
 
     for year in range(2022, 2023):
         # file = r'C:\Temp\baws_tempo\data_2021\aggregation_2021.tiff'
-        file = r'C:\Temp\baws_reanalys\aggragated_archive\2002-2022_aggregation.txt'
+        # original
+        # file = r'C:\Temp\baws_reanalys\aggragated_archive\2002-2022_aggregation.txt'
         # file = fr'C:\Temp\baws_reanalys\aggragated_archive\aggregation_{year}.tiff'
+        file = r'C:\Arbetsmapp\BAWS\Årsrapport 2023\Data_test\aggregate_archive\not_corrected_aggregation_2023.tiff'
 
         data, meta = raster_reader(file, include_meta=True)
         # data = np.loadtxt(file)

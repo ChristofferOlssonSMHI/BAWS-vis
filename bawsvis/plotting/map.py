@@ -6,17 +6,14 @@ Created on 2020-08-28 12:23
 @author: a002028
 
 """
-try:
-    import seaborn as sns
-    sns.set_style("ticks", {'axes.grid': True, 'grid.linestyle': '--'})
-    sns.set_context("paper", rc={"grid.linewidth": 0.5})
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.basemap import Basemap
-    from matplotlib.collections import PatchCollection
-    from matplotlib.patches import Polygon
-    import cmocean
-except:
-    pass
+import seaborn as sns
+sns.set_style("ticks", {'axes.grid': True, 'grid.linestyle': '--'})
+sns.set_context("paper", rc={"grid.linewidth": 0.5})
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Polygon
+import cmocean
 import numpy as np
 
 
@@ -171,10 +168,13 @@ class PlotMap:
     def _draw_mesh(self, p_color=False, data_mat=None):
         print('Drawing mesh..')
         self.data = data_mat
-        self.data[self.data <= 0] = np.nan
+        # self.data[self.data <= 0] = np.nan
         # Create 2D lat/lon arrays for Basemap
         #        lon2d, lat2d = np.meshgrid(self.lons, self.lats)
         # Transforms lat/lon into plotting coordinates for projection
+        # self.min_val = self.data[np.where(np.isfinite(self.data))].min()
+        # self.max_val = self.data[np.where(np.isfinite(self.data))].max()
+        print(self.data.type())
         self.min_val = self.data[np.where(np.isfinite(self.data))].min()
         self.max_val = self.data[np.where(np.isfinite(self.data))].max()
         self.extend = 'max'
@@ -315,7 +315,7 @@ class PlotWhiteMap:
                            ax=self.map_axes)
 
         import geopandas as gp
-        gf = gp.read_file(r'C:\Temp\baws_tempo\lake_mask.shp')
+        gf = gp.read_file(r'c:\Arbetsmapp\Shapefiler\GSHHS_h_L1.shp')
         for geom in gf.geometry:
             x, y = self.map(geom.exterior.coords.xy[0], geom.exterior.coords.xy[1])
             poly = Polygon(
@@ -657,7 +657,7 @@ class PlotBasinPatchesMap:
                 self.map_axes.add_patch(poly)
 
         self.map.drawmapboundary(fill_color='#DEFEFF')
-        gf = gp.read_file(r'C:\Temp\baws_tempo\lake_mask.shp')
+        gf = gp.read_file(r'c:\Arbetsmapp\Shapefiler\GSHHS_h_L1.shp')
         for i, row_geom in gf.iterrows():
             if row_geom['class'] == 4:
                 continue

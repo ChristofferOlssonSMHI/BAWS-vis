@@ -10,8 +10,10 @@ from bawsvis.data_handler import create_7day_composite
 if __name__ == "__main__":
     # Set path to data directory
     # data_path = r'C:\Temp\baws_tempo\data_2021'
-    data_path = r'C:\Temp\baws_reanalys\tiff_archive\corrected'
+    # data_path = r'C:\Temp\baws_reanalys\clipped_archive\corrected_geoms'
+    # Original below
     # data_path = r'C:\Temp\baws_reanalys\2022\corrected_geoms'
+    data_path = r'C:\Arbetsmapp\BAWS\Årsrapport 2023\Data_test\corrected_geoms'
 
     # Create the Session object
     s = Session(data_path=data_path)

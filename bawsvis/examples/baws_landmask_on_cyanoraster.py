@@ -22,7 +22,7 @@ def raster_reader(fid, include_meta=False):
 
 
 if __name__ == "__main__":
-    mask, meta = raster_reader(r'C:\BAWS\coastline\raster_landmask_baws1000_sweref99tm.tiff', include_meta=True)
+    mask, meta = raster_reader(r'C:\Kodning\BAWS-vis\raster_landmask_baws1000_sweref99tm.tiff', include_meta=True)
 
     files = generate_filepaths(
         r'C:\Temp\baws_reanalys\tiff_archive',

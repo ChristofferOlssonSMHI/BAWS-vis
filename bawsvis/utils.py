@@ -9,10 +9,7 @@ Created on 2020-08-28 10:50
 import os
 import numpy as np
 import rasterio as rio
-try:
-    from collections import Mapping
-except:
-    pass
+from collections.abc import Mapping
 from pyproj import Proj, CRS, transform
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -123,6 +120,7 @@ def generate_filepaths(directory, pattern='', not_pattern='DUMMY_PATTERN',
         if only_from_dir:
             if path != directory:
                 continue
+        # Generator function (uses yield) https://docs.python.org/3/glossary.html#term-generator
         for f in fids:
             if pattern in f and not_pattern not in f and f.endswith(endswith):
                 if any(pattern_list):

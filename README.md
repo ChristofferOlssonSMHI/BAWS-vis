@@ -1,6 +1,17 @@
 # Visualize BAWS data
 
+## Work-in-progress README
+The purpose of the current iteration of BAWS-vis is to produce the visualizations for the 2023 Baltic sea cyanobacteria season report. The numbered files in the root folder (1_15) need to be run in approximately that order to prepare the data for the visualization files in 0_1-0_3 plus baws_box_plot/boxes and get_history_bloom_start_end. File paths in the scripts currently need to be adjusted.
 
+TODO (incomplete):
+- Remove unnecessary code in all files
+- Merge baws_box_plot with the rest of BAWS-vis 
+- Refactor code to better integrate existing SMHI tools and data workflow
+    - Implement FAIR principles
+- Remove unnecessary hardcoding and parameterize
+- Annotate code and improve readability (PEP 8 compliance)
+
+## Original README
 Post season processing pinpoints
 --------------------------------
 Products we want to produce:

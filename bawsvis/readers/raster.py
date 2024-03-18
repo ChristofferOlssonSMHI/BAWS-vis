@@ -12,10 +12,7 @@ from fiona.crs import to_string
 import rasterio as rio
 from rasterio import features
 from rasterio.features import shapes, rasterize
-try:
-    import descartes
-except:
-    pass
+import descartes
 import numpy as np
 
 

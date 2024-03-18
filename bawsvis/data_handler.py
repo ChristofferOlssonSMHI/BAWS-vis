@@ -33,15 +33,23 @@ from shapely.geometry import Polygon, MultiPolygon, mapping
 from shapely.ops import polygonize
 
 
+# def area2transform_baws1000_sweref99tm():
+#     crs = rio.crs.CRS.from_string('+init=epsg:3006')
+#     west, south, east, north = (-49739.0, 5954123.0, 1350261.0, 7354123.0)
+#     height, width = (1400, 1400)
+#     transform = rio.transform.from_bounds(west, south,
+#                                           east, north,
+#                                           width, height)
+#     return crs, transform, (height, width)
+
 def area2transform_baws1000_sweref99tm():
-    crs = rio.crs.CRS.from_string('+init=epsg:3006')
+    crs = rio.crs.CRS.from_string("epsg:3006")
     west, south, east, north = (-49739.0, 5954123.0, 1350261.0, 7354123.0)
     height, width = (1400, 1400)
     transform = rio.transform.from_bounds(west, south,
                                           east, north,
                                           width, height)
     return crs, transform, (height, width)
-
 
 def date_range_composite(timestamp):
     dr = pd.date_range(timestamp - pd.Timedelta('6 days'), periods=7)
@@ -57,6 +65,7 @@ def get_area(geoframe):
 
 
 def shapeify_clouds(array, export_path=None):
+    """Doc."""
     shape_list = get_shapes_from_raster(array)
     schema = {'properties': [('class', 'int')], 'geometry': 'Polygon'}
     crs, transform, area_shape = area2transform_baws1000_sweref99tm()
@@ -156,6 +165,7 @@ def get_shapes_from_raster(raster, exclude_values=None):
 def rasterize_daily_shp(fid, meta=None):
     gf = gp.read_file(fid)
     gf = filter_shapes(gf)
+    
     if gf.empty:
         print('EMPTY', os.path.basename(fid))
     else:
@@ -304,6 +314,7 @@ def get_weekly_stats(generator):
 
 
 def aggregation_annuals(file_generator, mask=None, reader='raster'):
+    """Doc."""
     arrays = []
     for fid in file_generator:
         print(fid)
@@ -332,6 +343,14 @@ def aggregation_annuals(file_generator, mask=None, reader='raster'):
 
 
 def raster_aggregation(file_generator, mask=None, only_surface=False, reader='raster'):
+    """
+
+    :param reader:
+    :param file_generator:
+    :param mask:
+    :param only_surface:
+    :return:
+    """
     arrays = []
     zeros = np.array(())
     for fid in file_generator:
@@ -368,6 +387,7 @@ def raster_aggregation(file_generator, mask=None, only_surface=False, reader='ra
 
 
 def raster_cloud_aggregation(file_generator, reader='raster'):
+    """Doc."""
     agg_array = np.array(())
     for fid in file_generator:
         print(fid)
@@ -395,7 +415,11 @@ def raster_aggregation_ice(file_generator):
 
 
 def get_interpolated_data_table(data):
-    """Hardcoded to fit BAWS statistics."""
+    """
+    Hardcoded to fit BAWS statistics.
+    :param data:
+    :return:
+    """
     df = pd.DataFrame({'timestamp': data.columns,
                        'daily_bloom_area': data.loc['daily_bloom_area', :],
                        'surface_area': data.loc['surface_area', :],
@@ -417,7 +441,11 @@ def get_interpolated_data_table(data):
 
 
 def get_interpolated_statistics_table(data):
-    """Hardcoded to fit BAWS statistics."""
+    """
+    Hardcoded to fit BAWS statistics.
+    :param data:
+    :return:
+    """
     df = pd.DataFrame({'timestamp': data.columns,
                        'daily_mean': data.loc['daily_mean', :],
                        'daily_std_u': data.loc['daily_std_u', :],
@@ -440,12 +468,13 @@ def get_interpolated_statistics_table(data):
 
 
 def get_statistics(file_path):
+    """"""
     data = pandas_reader(file_path)
     data.rename(columns={c: pd.Timestamp(str(c)) for c in data.columns}, inplace=True)
     # df = get_interpolated_data_table(data)
 
     data = data.transpose()
-    summer_dates = pd.date_range('20220601', '20220831')
+    summer_dates = pd.date_range('20230601', '20230831')
     stats = {'summer_dates': summer_dates,
              'daily_mean': [], 'daily_std_u': [], 'daily_std_l': [],
              'weekly_mean': [], 'weekly_std_u': [], 'weekly_std_l': []}
@@ -478,21 +507,31 @@ def get_statistics(file_path):
 
 
 def get_valid_interiors(polygon_interiors):
+    """Doc."""
     valid_interiors = []
     for ie in polygon_interiors:
         if ie.is_valid and ie.is_simple:
             valid_interiors.append(ie)
         else:
-            be = Polygon(ie).exterior
-            mls = be.intersection(be)
-            polygons = polygonize(mls)
-            valid_bowtie = MultiPolygon(polygons)
-            for poly_of_multi in list(valid_bowtie):
-                line = poly_of_multi.exterior
-                if line.is_valid and line.is_simple:
-                    valid_interiors.append(line)
-                else:
-                    print(line)
+            print('Found invalid interior polygon. Cleaning...')
+            clean = ie.buffer(0)
+
+            if clean.is_valid and clean.is_simple:
+                print('Cleaned!')
+                valid_interiors.append(clean)
+            else:
+                print('Unable to clean.')
+            
+            # be = Polygon(ie).exterior
+            # mls = be.intersection(be)
+            # polygons = polygonize(mls)
+            # valid_bowtie = MultiPolygon(polygons)
+            # for poly_of_multi in list(valid_bowtie):
+            #     line = poly_of_multi.exterior
+            #     if line.is_valid and line.is_simple:
+            #         valid_interiors.append(line)
+            #     else:
+            #         print(line)
     return valid_interiors
 
 
@@ -541,6 +580,7 @@ class ExteriorLog:
 
 
 def get_valid_exterior(poly, name):
+    """Doc."""
     if type(poly) == MultiPolygon:
         # valid_geom = []
         if len(list(poly)) > 2:
@@ -559,18 +599,16 @@ def get_valid_exterior(poly, name):
 
 
 def correct_shapefile(fid, export_path=None):
-    name = os.path.basename(fid)
+    """Doc."""
+    print(fid)
     gf = gp.read_file(fid)
-    gf = gf.loc[~gf.geometry.isna(), :]
-    boolean = gf.is_valid
-    gf_not_valid = gf.loc[~boolean, :].reset_index(drop=True)
-    gf_valid = gf.loc[boolean, :].reset_index(drop=True)
-    shapes = []
-    # for i, shape in enumerate(gf._to_geo()['features']):
-    #     row_gf = gf.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
+    name = os.path.basename(fid)
 
-    for i, shape in enumerate(gf_not_valid._to_geo()['features']):
-        row_gf = gf_not_valid.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
+    shapes = []
+    for i, shape in enumerate(gf._to_geo()['features']):
+
+        row_gf = gf.iloc[i: i + 1].explode(index_parts=False).reset_index(drop=True)
+
         if row_gf.shape[0] > 1:
             exp_gf = row_gf.buffer(0)
             invalid_exteriors = []
@@ -588,30 +626,35 @@ def correct_shapefile(fid, export_path=None):
 
         for poly in polys:
             if not poly.is_valid:
-                ie = get_valid_interiors(poly.interiors)
+                print('Found invalid polygon. Cleaning...')
+                clean = poly.buffer(0)
+                
+                if clean.is_valid == True:
+                    print('Cleaned!')
+                    new_shape = shape.copy()
+                    new_shape['geometry'] = mapping(clean)
+                    shapes.append(new_shape)
+                else:
+                    print('Unable to clean.')
+                # ie = get_valid_interiors(poly.interiors)
+                # be = poly.exterior
+                # mls = be.intersection(be)
+                # polygons = polygonize(mls)
+                # valid_bowtie = MultiPolygon(polygons)
+                # for poly_of_multi in list(valid_bowtie):
+                #     if poly_of_multi.is_valid:
+                #         poly_interiors = get_valid_interiors(poly_of_multi.interiors)
+                #         interiors.extend(poly_interiors)
+                #         for line_ring in ie:
+                #             if poly_of_multi.contains(line_ring):
+                #                 interiors.append(line_ring)
 
-                be = poly.exterior
-                mls = be.intersection(be)
-                polygons = polygonize(mls)
+                # exterior = get_valid_exterior(poly.buffer(0), name)
 
-                valid_bowtie = MultiPolygon(polygons)
-                for poly_of_multi in list(valid_bowtie):
-                    if poly_of_multi.is_valid:
-                        poly_interiors = get_valid_interiors(poly_of_multi.interiors)
-                        interiors.extend(poly_interiors)
-                        for line_ring in ie:
-                            if poly_of_multi.contains(line_ring):
-                                interiors.append(line_ring)
-
-                exterior = get_valid_exterior(poly.buffer(0), name)
-
-                new_poly = Polygon(
-                    exterior.exterior,
-                    interiors
-                )
-                new_shape = shape.copy()
-                new_shape['geometry'] = mapping(new_poly)
-                shapes.append(new_shape)
+                # new_poly = Polygon(
+                #     exterior.exterior,
+                #     interiors
+                # )
             else:
                 if row_gf.shape[0] == 1:
                     shapes.append(shape)
@@ -620,17 +663,13 @@ def correct_shapefile(fid, export_path=None):
                     new_shape['geometry'] = mapping(poly)
                     shapes.append(new_shape)
 
-    for shape in gf_valid._to_geo()['features']:
-        shapes.append(shape)
-
-    crs = rio.crs.CRS.from_string('+init=epsg:3006')
+    crs = rio.crs.CRS.from_string("epsg:3006")
     schema = {'properties': [('class', 'int')], 'geometry': 'Polygon'}
 
     out_path = os.path.join(export_path, os.path.basename(fid))
-    with fiona.open(
-            out_path, 'w',
-            driver='ESRI Shapefile', crs=to_string(crs),
-            schema=schema) as dst:
+    with fiona.open(out_path, 'w',
+                    driver='ESRI Shapefile', crs=to_string(crs),
+                    schema=schema) as dst:
         dst.writerecords(shapes)
 
 
